@@ -1,0 +1,26 @@
+# Dependencies and framework caches, including nested directories
+node_modules/
+.next/
+.vinext/
+.wrangler/
+.sites-runtime/
+.vercel/
+.netlify/
+
+# Secrets and local environment configuration
+.env
+.env.*
+*.pem
+*.key
+
+# Local tools, logs, and deployment archives
+.agents/
+.codex/
+*.log
+*.tar
+*.tar.gz
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+
+# dist is tracked because this Site uses buildless static hosting.
