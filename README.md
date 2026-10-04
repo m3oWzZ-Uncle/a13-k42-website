@@ -1,24 +1,31 @@
 # A13-K42 Ngô Quyền
 
-Website lưu giữ kỷ niệm của lớp. Bản hiện tại là giao diện HTML/CSS tĩnh.
+Website lưu giữ kỷ niệm của lớp, dùng HTML/CSS/JavaScript và Supabase cho Google Auth,
+dữ liệu và ảnh riêng của lớp. Hosting Vercel phục vụ thư mục `dist/`.
 
 ## Chạy build
 
-Cần Node.js 18 trở lên. Project không có thư viện cần cài.
+Cần Node.js 22 trở lên.
 
 ```sh
+npm ci
+npm test
 npm run build
 ```
 
 Lệnh build kiểm tra tài liệu HTML, các liên kết nội bộ và tài nguyên cục bộ,
-sau đó sao chép nội dung `src/` sang `dist/`. Có thể mở `dist/index.html`
-để xem giao diện hoặc dùng `dist/` làm thư mục xuất bản trên dịch vụ hosting.
+sau đó sao chép nội dung `src/` sang `dist/` và bundle JavaScript cùng Supabase SDK.
+Phần đăng nhập cần phục vụ website qua HTTP(S), không mở bằng `file://`.
 Chỉnh sửa giao diện trong `src/`, rồi chạy build để cập nhật `dist/`.
 
 ## Trạng thái chức năng
 
-Đăng nhập Google, phân quyền admin, đăng ảnh và lượt tim chưa được triển khai.
-Ảnh và câu chuyện của lớp hiện dùng các khung chờ nội dung.
+Đã viết đăng nhập Google; tài khoản mới mặc định viewer (chỉ đọc), admin quản lý
+ảnh/kỷ niệm/dấu mốc/lưu bút và cấp/thu hồi quyền admin. Quyền được kiểm tra bằng
+PostgreSQL RLS và RPC, không tin role do trình duyệt hoặc user metadata cung cấp.
+Không có tính năng thả tim theo yêu cầu mới nhất. Đọc `SETUP-GOOGLE.md` để kết nối
+Supabase, Google OAuth và cấp admin đầu tiên. Chưa xác minh đăng nhập thật cho đến
+khi chủ website hoàn tất cấu hình dịch vụ.
 
 ## Git
 
@@ -26,4 +33,5 @@ Chỉnh sửa giao diện trong `src/`, rồi chạy build để cập nhật `d
 và các file cấu hình môi trường khác. Không lưu mật khẩu, token hoặc khóa bí mật
 trong mã nguồn. `dist/` được theo dõi vì cấu hình Sites hiện tại dùng file tĩnh.
 
-Repository được chuẩn bị tại máy, chưa cấu hình remote GitHub và chưa push.
+Remote GitHub: https://github.com/m3oWzZ-Uncle/a13-k42-website
+Push bằng GitHub Desktop nếu Git CLI trên máy chưa có phiên đăng nhập.

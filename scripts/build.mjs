@@ -1,6 +1,7 @@
 import { mkdir, readFile, readdir, copyFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { build } from 'esbuild';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const source = path.join(root, 'src');
@@ -32,4 +33,22 @@ async function copyDirectory(from, to) {
   }
 }
 await copyDirectory(source, output);
-console.log('Static build successful: source and local links checked, files copied to dist.');
+const url = process.env.SUPABASE_URL || '';
+const key = process.env.SUPABASE_PUBLISHABLE_KEY || '';
+if (Boolean(url) !== Boolean(key)) throw new Error('Both Supabase public configuration values are required.');
+if (url && !/^https:\/\/[^/]+\.supabase\.co\/?$/.test(url)) throw new Error('Use the Supabase project HTTPS URL.');
+if (key && !key.startsWith('sb_publishable_')) {
+  throw new Error('Use a Supabase publishable key (sb_publishable_), never a secret or service-role key.');
+}
+await build({
+  entryPoints: [path.join(source, 'account.js')],
+  outfile: path.join(output, 'account.js'),
+  bundle: true, format: 'esm', platform: 'browser', target: 'es2022', minify: true,
+  plugins: [{ name: 'public-config', setup(builder) {
+    builder.onLoad({ filter: /auth-config\.js$/ }, () => ({
+      contents: `export const authConfig = ${JSON.stringify({ url, key })};`, loader: 'js'
+    }));
+  }}]
+});
+// auth-config.js in dist remains a blank template; actual public config is bundled.
+console.log(`Build successful. Google sign-in configuration: ${url ? 'present' : 'not connected yet'}.`);
